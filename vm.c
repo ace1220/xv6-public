@@ -434,7 +434,7 @@ mprotect(void* addr, int len)
             cprintf("Address not found");
             return -1;
         }
-        if ((*page & PTE_U) == 0)
+        if ((*page & PTE_P) == 0 || (*page & PTE_U) == 0)
         {
             cprintf("Address not accessible");
             return -1;
@@ -490,7 +490,7 @@ munprotect(void* addr, int len)
             cprintf("Address not found");
             return -1;
         }
-        if ((*page & PTE_U) == 0)
+        if ((*page & PTE_P) == 0 || (*page & PTE_U) == 0)
         {
             cprintf("Address not accessible");
             return -1;

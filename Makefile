@@ -191,6 +191,8 @@ UPROGS := \
 	_usertests\
 	_wc\
 	_zombie\
+	_mprotect_test\
+	_munprotect_test\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -263,6 +265,7 @@ EXTRA := \
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
+	mprotect_test.c munprotect_test.c\
 
 dist:
 	rm -rf dist
