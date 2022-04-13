@@ -1,6 +1,6 @@
 Name: Grace Xiao Fu Edgecombe
 K-Number: k20006917
-Git Repository: https://github.com/ace1220/xv6-public
+Git Repository: https://github.com/ace1220/xv6-public.git
 
 NOTE: we have stopped maintaining the x86 version of xv6, and switched
 our efforts to the RISC-V version
