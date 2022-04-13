@@ -89,3 +89,27 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// changes the access protection from the memory page
+// address specified to the page that matches (address
+// + length - 1) to non-editing
+int
+sys_mprotect(void)
+{
+    int address, length;
+    if (argint(0, &address) < 0 || argint(1, &length) < 0)
+        return -1;
+    return mprotect((void*)address, length);
+}
+
+// changes the access protection from the memory page
+// address specified to the page that matches (address
+// + length - 1) to non-editing
+int
+sys_munprotect(void)
+{
+    int address, length;
+    if (argint(0, &address) < 0 || argint(1, &length) < 0)
+        return -1;
+    return munprotect((void*)address, length);
+}

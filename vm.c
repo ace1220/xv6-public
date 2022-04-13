@@ -393,9 +393,114 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 }
 
 //PAGEBREAK!
-// Blank page.
+// Makes pages read-only (non-editable),
+// returns -1 if unsuccessful, 0 if successful
+int
+mprotect(void* addr, int len)
+{
+    int addr_num = (int)addr;
+
+    // break cases: not using panic as it shouldn't be fatal as
+    //    don't get run
+    if (len < 1)
+    {
+        cprintf("Length must be a positive integer.\n");
+        return -1;
+    }
+    if ((addr_num % PGSIZE) != 0)
+    {
+        cprintf("Address is not aligned to a page boundary.\n");
+        return -1;
+    }
+
+    // length multiplied by page size, so it covers all pages in
+    // the range needed
+    int len_rounded_up;
+    if (len % PGSIZE == 0)
+        len_rounded_up = len;
+    else
+        len_rounded_up = len + PGSIZE - (len % PGSIZE);
+
+    // Will loop through the addresses to be made protected, will
+    // stop if out of bound.
+    int addr_i = PGROUNDDOWN(addr_num);
+    pte_t *page;
+    while (addr_i <= (addr_num + len_rounded_up))
+    {
+        // Get the page without creating a new mapping
+        page = walkpgdir(myproc()->pgdir, (void *)addr_i, 0);
+        if (page == 0)
+        {
+            cprintf("Address not found");
+            return -1;
+        }
+        if ((*page & PTE_U) == 0)
+        {
+            cprintf("Address not accessible");
+            return -1;
+        }
+        addr_i += PGSIZE;
+        // Disallow writing to page
+        *page = (*page) & (~PTE_W);
+    }
+    return 0;
+}
+
+
 //PAGEBREAK!
-// Blank page.
+// Makes pages read and write (editable),
+// returns -1 if unsuccessful, 0 if successful
+int
+munprotect(void* addr, int len)
+{
+    int addr_num = (int)addr;
+
+    // break cases: not using panic as it shouldn't be fatal as
+    //    don't get run
+    if (len < 1)
+    {
+        cprintf("Length must be a positive integer.\n");
+        return -1;
+    }
+    if ((addr_num % PGSIZE) != 0)
+    {
+        cprintf("Address is not aligned to a page boundary.\n");
+        return -1;
+    }
+
+    // length multiplied by page size, so it covers all pages in
+    // the range needed
+    int len_rounded_up;
+    if (len % PGSIZE == 0)
+        len_rounded_up = len;
+    else
+        len_rounded_up = len + PGSIZE - (len % PGSIZE);
+
+    // Will loop through the addresses to be made protected, will
+    // stop if out of bound.
+    int addr_i = PGROUNDDOWN(addr_num);
+    pte_t *page;
+    while (addr_i <= (addr_num + len_rounded_up))
+    {
+        // Get the page without creating a new mapping
+        page = walkpgdir(myproc()->pgdir, (void *)addr_i, 0);
+        // break cases
+        if (page == 0)
+        {
+            cprintf("Address not found");
+            return -1;
+        }
+        if ((*page & PTE_U) == 0)
+        {
+            cprintf("Address not accessible");
+            return -1;
+        }
+        addr_i += PGSIZE;
+        // Allow writing to page
+        *page = (*page) | (PTE_W);
+    }
+    return 0;
+}
 //PAGEBREAK!
 // Blank page.
 
